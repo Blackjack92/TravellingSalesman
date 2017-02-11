@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="TravellingSalesman.Views.PointsMapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TravellingSalesman.Views"
+             xmlns:utils="clr-namespace:TravellingSalesman.Utils"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    
+    <UserControl.Resources>
+        <utils:InvertConverter x:Key="Inverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+            <Label Content="Select algorithm:" />
+            <ComboBox IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}" />
+            <Label Content="Distance:" />
+            <Label x:Name="lblDistance" />
+        </StackPanel>
+        <Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />
+        <Button Grid.Row="2" Grid.Column="0" Content="Start" Command="{Binding StartCommand}" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}" HorizontalAlignment="Left" />
+        <ProgressBar Grid.Row="2" Grid.Column="1" x:Name="pbCalculation" Minimum="0" Maximum="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="{Binding ElementName=pbCalculation, Path=Value}" />
+    </Grid>
+</UserControl>
