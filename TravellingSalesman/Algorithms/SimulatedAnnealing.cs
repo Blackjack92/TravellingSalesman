@@ -13,6 +13,8 @@ namespace TravellingSalesman.Algorithms
 
         public SimulatedAnnealing()
         {
+            Name = "Simulated Annealing";
+
             bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.RunWorkerCompleted += WorkerCompleted;

@@ -29,8 +29,8 @@ namespace TravellingSalesman.Views
             MainViewModel model = e.NewValue as MainViewModel;
             if (model == null) { return; }
 
-            model.Algorithm.EdgesCalculated += Model_EdgesCalculated;
-            model.Algorithm.ProgressChanged += Algorithm_ProgressChanged;
+            model.EdgesCalculated += Model_EdgesCalculated;
+            model.ProgressChanged += Algorithm_ProgressChanged;
 
             int height = 10;
             int width = 10;

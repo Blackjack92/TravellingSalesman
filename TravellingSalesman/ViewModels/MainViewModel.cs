@@ -13,8 +13,33 @@ namespace TravellingSalesman.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<Point> Points { get; }
-        public Algorithm Algorithm { get; }
+        public Algorithm Algorithm { get; set; }
         public DelegateCommand StartCommand { get; }
+        public List<Algorithm> Algorithms { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        // Create the OnPropertyChanged method to raise the event
+        // This could be replaced by using PostSharp
+        protected void OnPropertyChanged([CallerMemberName]string name = "Default")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public event EdgesCalculatedHandler EdgesCalculated;
+        public delegate void EdgesCalculatedHandler(object sender, IEnumerable<Point> points);
+
+        protected void OnCalculated(IEnumerable<Point> points)
+        {
+            EdgesCalculated?.Invoke(this, points);
+        }
+
+        public event CalculationProgressChangedEventHandler ProgressChanged;
+        public delegate void CalculationProgressChangedEventHandler(object sender, int progress);
+
+        protected void OnProgressChanged(int progress)
+        {
+            ProgressChanged?.Invoke(this, progress);
+        }
 
         public bool IsAlgorithmRunning
         {
@@ -29,6 +54,17 @@ namespace TravellingSalesman.ViewModels
 
         public MainViewModel()
         {
+            Algorithms = new List<Algorithm>();
+            Algorithms.Add(new SimulatedAnnealing());
+            Algorithms.Add(new BruteForce());
+            Algorithms.ForEach(a =>
+            {
+                a.EdgesCalculated += (sender, points) => OnCalculated(points);
+                a.ProgressChanged += (sender, progress) => OnProgressChanged(progress);
+                a.EdgesCalculationFinished += AlgorithmFinished;
+            });
+
+
             Points = new ObservableCollection<Point>();
             Points.Add(new Point(0, 0));
             Points.Add(new Point(150, 150));
@@ -41,13 +77,9 @@ namespace TravellingSalesman.ViewModels
             Points.Add(new Point(400, 400));
             Points.Add(new Point(450, 380));
             Points.Add(new Point(0, 320));
-            Algorithm = new SimulatedAnnealing();
-            // Algorithm = new BruteForce();
-            Algorithm.EdgesCalculationFinished += AlgorithmFinished;
+            Algorithm = Algorithms[0];
             StartCommand = new DelegateCommand(Calculate);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private void AlgorithmFinished(object sender)
         {
@@ -68,13 +100,6 @@ namespace TravellingSalesman.ViewModels
 
                 Algorithm.Run(Points);
             }
-        }
-
-        // Create the OnPropertyChanged method to raise the event
-        // This could be replaced by using PostSharp
-        protected void OnPropertyChanged([CallerMemberName]string name = "Default")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

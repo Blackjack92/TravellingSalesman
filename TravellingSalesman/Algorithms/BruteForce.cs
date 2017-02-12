@@ -13,6 +13,8 @@ namespace TravellingSalesman.Algorithms
 
         public BruteForce()
         {
+            Name = "Brute Force";
+
             bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.RunWorkerCompleted += WorkerCompleted;

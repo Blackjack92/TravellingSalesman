@@ -7,6 +7,8 @@ namespace TravellingSalesman.Algorithms
 {
     public abstract class Algorithm
     {
+        public string Name { get; protected set; }
+
         public event EdgesCalculatedHandler EdgesCalculated;
         public delegate void EdgesCalculatedHandler(object sender, IEnumerable<Point> points);
 

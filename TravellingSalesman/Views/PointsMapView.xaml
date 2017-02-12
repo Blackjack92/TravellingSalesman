@@ -27,7 +27,13 @@
 
         <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal">
             <Label Content="Select algorithm:" />
-            <ComboBox IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}" />
+            <ComboBox ItemsSource="{Binding Algorithms}" SelectedItem="{Binding Algorithm}" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
             <Label Content="Distance:" />
             <Label x:Name="lblDistance" />
         </StackPanel>
