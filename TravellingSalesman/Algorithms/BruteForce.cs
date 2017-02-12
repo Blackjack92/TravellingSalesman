@@ -14,6 +14,7 @@ namespace TravellingSalesman.Algorithms
         public BruteForce()
         {
             bw = new BackgroundWorker();
+            bw.WorkerSupportsCancellation = true;
             bw.RunWorkerCompleted += WorkerCompleted;
             bw.DoWork += new DoWorkEventHandler(RunCalculation);
         }
