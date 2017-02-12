@@ -38,18 +38,18 @@
             <Label x:Name="lblDistance" />
         </StackPanel>
         <Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />
-        <ToggleButton Grid.Row="2" Grid.Column="0" Command="{Binding StartCommand}" HorizontalAlignment="Left">
-            <ToggleButton.Style>
-                <Style TargetType="{x:Type ToggleButton}">
+        <Button Grid.Row="2" Grid.Column="0" Command="{Binding StartCommand}" HorizontalAlignment="Left">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
                     <Setter Property="Content" Value="Start"/>
                     <Style.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
+                        <DataTrigger Binding="{Binding IsAlgorithmRunning}" Value="True">
                             <Setter Property="Content" Value="Stop"/>
-                        </Trigger>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </ToggleButton.Style>
-        </ToggleButton>
+            </Button.Style>
+        </Button>
         <ProgressBar Grid.Row="2" Grid.Column="1" x:Name="pbCalculation" Minimum="0" Maximum="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
         <Label Grid.Row="2" Grid.Column="2" Content="{Binding ElementName=pbCalculation, Path=Value}" />
     </Grid>
