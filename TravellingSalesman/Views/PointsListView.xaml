@@ -16,6 +16,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Content="Points" Grid.Row="0" />
@@ -30,5 +31,21 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="0" Content="x:" />
+            <TextBox x:Name="xPos" Text="{Binding X}" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
+            <Label Grid.Column="2" Content="y:" />
+            <TextBox x:Name="yPos" Text="{Binding Y}" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
+            <Button Grid.Column="4" Content="Add" Command="{Binding AddCommand}" />
+        </Grid>
     </Grid>
 </UserControl>

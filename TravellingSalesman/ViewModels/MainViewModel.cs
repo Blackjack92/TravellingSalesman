@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +17,22 @@ namespace TravellingSalesman.ViewModels
         public ObservableCollection<Point> Points { get; }
         public Algorithm Algorithm { get; set; }
         public DelegateCommand StartCommand { get; }
+        public ICommand AddCommand { get; }
         public List<Algorithm> Algorithms { get; private set; }
+        public string X
+        {
+            get { return x; }
+            set
+            {
+                x = value;
+                OnPropertyChanged();
+            }
+        }
+        public string Y { get { return y; } set { y = value; OnPropertyChanged(); } }
+
+
+        private string x;
+        private string y;
 
         public event PropertyChangedEventHandler PropertyChanged;
         // Create the OnPropertyChanged method to raise the event
@@ -64,7 +81,6 @@ namespace TravellingSalesman.ViewModels
                 a.EdgesCalculationFinished += AlgorithmFinished;
             });
 
-
             Points = new ObservableCollection<Point>();
             Points.Add(new Point(0, 0));
             Points.Add(new Point(150, 150));
@@ -79,6 +95,35 @@ namespace TravellingSalesman.ViewModels
             Points.Add(new Point(0, 320));
             Algorithm = Algorithms[0];
             StartCommand = new DelegateCommand(Calculate);
+            AddCommand = new DelegateCommand(Add);
+        }
+
+        private void Add(object obj)
+        {
+            int x;
+            if (!int.TryParse(X, out x))
+            {
+                x = 0;
+            }
+
+            int y;
+            if (!int.TryParse(Y, out y))
+            {
+                y = 0;
+            }
+
+            Point p = new Point(x, y);
+            if (Points.Any(point => point.Equals(p)))
+            {
+                MessageBox.Show("Point was already added.");
+            }
+            else
+            {
+                Points.Add(p);
+                X = "";
+                Y = "";
+            }
+
         }
 
         private void AlgorithmFinished(object sender)

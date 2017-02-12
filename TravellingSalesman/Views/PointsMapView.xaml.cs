@@ -82,7 +82,6 @@ namespace TravellingSalesman.Views
                         pointCanvas.Children.Remove(edge);
                     }
 
-
                     Point p1;
                     Point p2;
                     // Add new edges

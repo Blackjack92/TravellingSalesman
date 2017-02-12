@@ -23,6 +23,15 @@ namespace TravellingSalesman.Views
         public PointsListView()
         {
             InitializeComponent();
+
+            xPos.PreviewTextInput += NumberPreviewTextInput;
+            yPos.PreviewTextInput += NumberPreviewTextInput;
+        }
+
+        private void NumberPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!char.IsDigit(e.Text, e.Text.Length - 1))
+                e.Handled = true;
         }
     }
 }
