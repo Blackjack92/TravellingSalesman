@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,8 @@ namespace TravellingSalesman.Views
     /// </summary>
     public partial class PointsMapView : UserControl
     {
+        private MainViewModel model;
+
         public PointsMapView()
         {
             InitializeComponent();
@@ -26,12 +29,23 @@ namespace TravellingSalesman.Views
 
         private void UpdateMap(object sender, DependencyPropertyChangedEventArgs e)
         {
-            MainViewModel model = e.NewValue as MainViewModel;
+            model = e.NewValue as MainViewModel;
             if (model == null) { return; }
 
+            model.Points.CollectionChanged += Points_CollectionChanged;
             model.EdgesCalculated += Model_EdgesCalculated;
             model.ProgressChanged += Algorithm_ProgressChanged;
+            drawPoints();
+        }
 
+        private void Points_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            pointCanvas.Children.Clear();
+            drawPoints();
+        }
+
+        private void drawPoints()
+        {
             int height = 10;
             int width = 10;
 

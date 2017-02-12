@@ -11,8 +11,8 @@
     <UserControl.Resources>
         <utils:InvertConverter x:Key="Inverter" />
     </UserControl.Resources>
-    
-    <Grid>
+
+    <Grid IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -21,7 +21,7 @@
 
         <Label Content="Points" Grid.Row="0" />
 
-        <ListView ItemsSource="{Binding Points}" Grid.Row="1" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
+        <ListView ItemsSource="{Binding Points}" Grid.Row="1">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
