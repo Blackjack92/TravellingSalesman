@@ -32,5 +32,7 @@ namespace TravellingSalesman.Algorithms
         }
 
         public abstract void Run(IEnumerable<Point> points);
+
+        public abstract void Stop();
     }
 }

@@ -14,6 +14,7 @@ namespace TravellingSalesman.Algorithms
         public SimulatedAnnealing()
         {
             bw = new BackgroundWorker();
+            bw.WorkerSupportsCancellation = true;
             bw.RunWorkerCompleted += WorkerCompleted;
             bw.DoWork += new DoWorkEventHandler(RunCalculation);
         }
@@ -41,8 +42,10 @@ namespace TravellingSalesman.Algorithms
             return newGeneration;
         }
 
-        private void RunCalculation(object o, DoWorkEventArgs args)
+        private void RunCalculation(object sender, DoWorkEventArgs args)
         {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
             IEnumerable<Point> points = args.Argument as IEnumerable<Point>;
             Point[] generation = points.ToArray();
             OnCalculated(generation);
@@ -60,27 +63,35 @@ namespace TravellingSalesman.Algorithms
 
             while (temperature > temperatureStop && numberOfGenerations < maxNumberOfGenerations)
             {
-                Point[] newGeneration = Lin2Opt(generation);
-                double newFitness = newGeneration.CalculateDistance();
-
-                // Decide if the new generation should be taken
-                if (newFitness <= fitness || (Math.Exp((fitness - newFitness) / temperature) > new Random().NextDouble()))
+                if (worker.CancellationPending == true)
                 {
-                    generation = newGeneration;
-                    fitness = newFitness;
-                    // Return always the better generation
-                    OnCalculated(generation);
+                    args.Cancel = true;
+                    break;
                 }
-
-                // Recalculate the temperature
-                if (numberOfGenerations % numberOfSameTemperatureIterations == 0)
+                else
                 {
-                    temperature *= alpha;
-                }
+                    Point[] newGeneration = Lin2Opt(generation);
+                    double newFitness = newGeneration.CalculateDistance();
 
-                numberOfGenerations++;
-                int progress = (int)(numberOfGenerations * 100.0 / maxNumberOfGenerations);
-                OnProgressChanged(progress);
+                    // Decide if the new generation should be taken
+                    if (newFitness <= fitness || (Math.Exp((fitness - newFitness) / temperature) > new Random().NextDouble()))
+                    {
+                        generation = newGeneration;
+                        fitness = newFitness;
+                        // Return always the better generation
+                        OnCalculated(generation);
+                    }
+
+                    // Recalculate the temperature
+                    if (numberOfGenerations % numberOfSameTemperatureIterations == 0)
+                    {
+                        temperature *= alpha;
+                    }
+
+                    numberOfGenerations++;
+                    int progress = (int)(numberOfGenerations * 100.0 / maxNumberOfGenerations);
+                    OnProgressChanged(progress);
+                }
             }
 
             OnProgressChanged(100);
@@ -94,6 +105,11 @@ namespace TravellingSalesman.Algorithms
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             OnCalculationFinished();
+        }
+
+        public override void Stop()
+        {
+            bw.CancelAsync();
         }
     }
 }

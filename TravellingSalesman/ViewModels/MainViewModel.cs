@@ -44,7 +44,7 @@ namespace TravellingSalesman.ViewModels
             Algorithm = new SimulatedAnnealing();
             // Algorithm = new BruteForce();
             Algorithm.EdgesCalculationFinished += AlgorithmFinished;
-            StartCommand = new DelegateCommand(Calculate, o => !IsAlgorithmRunning);
+            StartCommand = new DelegateCommand(Calculate);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -57,10 +57,17 @@ namespace TravellingSalesman.ViewModels
 
         private void Calculate(object obj)
         {
-            IsAlgorithmRunning = true;
-            StartCommand.RaiseCanExecuteChanged();
+            if (IsAlgorithmRunning)
+            {
+                Algorithm.Stop();
+            }
+            else
+            {
+                IsAlgorithmRunning = true;
+                StartCommand.RaiseCanExecuteChanged();
 
-            Algorithm.Run(Points);
+                Algorithm.Run(Points);
+            }
         }
 
         // Create the OnPropertyChanged method to raise the event

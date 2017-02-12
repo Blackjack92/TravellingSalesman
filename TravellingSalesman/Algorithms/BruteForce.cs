@@ -23,22 +23,39 @@ namespace TravellingSalesman.Algorithms
             bw.RunWorkerAsync(points);
         }
 
-        private void RunCalculation(object o, DoWorkEventArgs args)
+        public override void Stop()
         {
+            bw.CancelAsync();
+        }
+
+        private void RunCalculation(object sender, DoWorkEventArgs args)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
             IEnumerable<Point> points = args.Argument as IEnumerable<Point>;
             IEnumerable<Point> bestPermutation = points;
             int count = 0;
             foreach (var permutation in points.Permute(points.Count()))
             {
-                if (bestPermutation.CalculateDistance() > permutation.CalculateDistance())
+                if (worker.CancellationPending == true)
                 {
-                    bestPermutation = permutation;
-                    OnCalculated(bestPermutation);
+                    args.Cancel = true;
+                    break;
                 }
+                else
+                {
+                    if (bestPermutation.CalculateDistance() > permutation.CalculateDistance())
+                    {
+                        bestPermutation = permutation;
+                        OnCalculated(bestPermutation);
+                    }
 
-                count++;
-                OnProgressChanged((int)((count * 100.0) / points.Count().Factorial()));
+                    count++;
+                    OnProgressChanged((int)((count * 100.0) / points.Count().Factorial()));
+                }
             }
+
+            OnProgressChanged(100);
         }
 
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
