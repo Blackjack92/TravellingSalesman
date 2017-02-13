@@ -9,29 +9,12 @@ namespace TravellingSalesman.Algorithms
 {
     public class BruteForce : Algorithm
     {
-        private readonly BackgroundWorker bw;
-
-        public BruteForce()
+        public BruteForce() : base()
         {
             Name = "Brute Force";
-
-            bw = new BackgroundWorker();
-            bw.WorkerSupportsCancellation = true;
-            bw.RunWorkerCompleted += WorkerCompleted;
-            bw.DoWork += new DoWorkEventHandler(RunCalculation);
         }
 
-        public override void Run(IEnumerable<Point> points)
-        {
-            bw.RunWorkerAsync(points);
-        }
-
-        public override void Stop()
-        {
-            bw.CancelAsync();
-        }
-
-        private void RunCalculation(object sender, DoWorkEventArgs args)
+        protected override void RunCalculation(object sender, DoWorkEventArgs args)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -59,11 +42,6 @@ namespace TravellingSalesman.Algorithms
             }
 
             OnProgressChanged(100);
-        }
-
-        private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            OnCalculationFinished();
         }
     }
 }

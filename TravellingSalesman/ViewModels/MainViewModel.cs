@@ -17,10 +17,13 @@ namespace TravellingSalesman.ViewModels
         public int Progress { get { return progress; } private set { progress = value; OnPropertyChanged(); } }
         private int progress;
 
-        public Algorithm Algorithm { get; set; }
+        public Algorithm Algorithm { get { return algorithm; } set { algorithm = value; OnPropertyChanged(); } }
+        private Algorithm algorithm;
+
         public DelegateCommand StartCommand { get; }
         public ICommand AddCommand { get; }
         public List<Algorithm> Algorithms { get; private set; }
+
         public string X
         {
             get { return x; }

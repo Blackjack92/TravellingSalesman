@@ -36,6 +36,7 @@
             </ComboBox>
             <Label Content="Distance:" />
             <Label x:Name="lblDistance" />
+            <Label Content="{Binding Algorithm.Runtime}" />
         </StackPanel>
         <Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />
         <Button Grid.Row="2" Grid.Column="0" Command="{Binding StartCommand}" HorizontalAlignment="Left">

@@ -9,16 +9,9 @@ namespace TravellingSalesman.Algorithms
 {
     public class SimulatedAnnealing : Algorithm
     {
-        private readonly BackgroundWorker bw;
-
-        public SimulatedAnnealing()
+        public SimulatedAnnealing() : base()
         {
             Name = "Simulated Annealing";
-
-            bw = new BackgroundWorker();
-            bw.WorkerSupportsCancellation = true;
-            bw.RunWorkerCompleted += WorkerCompleted;
-            bw.DoWork += new DoWorkEventHandler(RunCalculation);
         }
 
         private Point[] Lin2Opt(Point[] generation)
@@ -44,10 +37,10 @@ namespace TravellingSalesman.Algorithms
             return newGeneration;
         }
 
-        private void RunCalculation(object sender, DoWorkEventArgs args)
+        protected override void RunCalculation(object sender, DoWorkEventArgs args)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-
+            
             IEnumerable<Point> points = args.Argument as IEnumerable<Point>;
             Point[] generation = points.ToArray();
             OnCalculated(generation.TransformToEdges());
@@ -97,21 +90,6 @@ namespace TravellingSalesman.Algorithms
             }
 
             OnProgressChanged(100);
-        }
-
-        public override void Run(IEnumerable<Point> points)
-        {
-            bw.RunWorkerAsync(points);
-        }
-
-        private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            OnCalculationFinished();
-        }
-
-        public override void Stop()
-        {
-            bw.CancelAsync();
         }
     }
 }
