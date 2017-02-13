@@ -22,7 +22,6 @@ namespace TravellingSalesman.Algorithms
         {
             timer = new Timer();
             timer.Interval = 100;
-            timer.Enabled = true;
             timer.Elapsed += (sender, args) => Runtime += timer.Interval/1000.0;
 
             bw = new BackgroundWorker();

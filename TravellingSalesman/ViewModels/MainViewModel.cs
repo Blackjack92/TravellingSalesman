@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using TravellingSalesman.Algorithms;
 using TravellingSalesman.Models;
@@ -54,6 +55,8 @@ namespace TravellingSalesman.ViewModels
 
         public MainViewModel()
         {
+            
+
             Algorithms = new List<Algorithm>();
             Algorithms.Add(new SimulatedAnnealing());
             Algorithms.Add(new BruteForce());
