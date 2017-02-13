@@ -33,8 +33,7 @@ namespace TravellingSalesman.Views
             if (model == null) { return; }
 
             model.Points.CollectionChanged += Points_CollectionChanged;
-            model.EdgesCalculated += Model_EdgesCalculated;
-            model.ProgressChanged += Algorithm_ProgressChanged;
+            model.Edges.CollectionChanged += Model_EdgesCalculated;
             drawPoints();
         }
 
@@ -74,21 +73,13 @@ namespace TravellingSalesman.Views
             }
         }
 
-        private void Algorithm_ProgressChanged(object sender, int progress)
+        private void Model_EdgesCalculated(object sender, NotifyCollectionChangedEventArgs e)
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                 new Action(() =>
                 {
-                    pbCalculation.Value = progress;
-                }
-                ));
-        }
+                    List<Edge> edges = model.Edges.ToList();
 
-        private void Model_EdgesCalculated(object sender, IEnumerable<Point> points)
-        {
-            Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                new Action(() =>
-                {
                     // Remove all drawn edges
                     List<Line> drawnEdges = pointCanvas.Children.OfType<Line>().ToList();
                     foreach (var edge in drawnEdges)
@@ -96,18 +87,13 @@ namespace TravellingSalesman.Views
                         pointCanvas.Children.Remove(edge);
                     }
 
-                    Point p1;
-                    Point p2;
-                    // Add new edges
-                    for (int i = 1; i < points.Count(); i++)
+                    foreach (var edge in edges)
                     {
-                        // Console.WriteLine("[" + edge.Start + "] -> [" + edge.End + "]");
-
                         Line line = new Line();
                         line.Stroke = Brushes.LightSteelBlue;
 
-                        p1 = points.ElementAt(i - 1);
-                        p2 = points.ElementAt(i);
+                        Point p1 = edge.Start;
+                        Point p2 = edge.End;
                         line.X1 = p1.X;
                         line.X2 = p2.X;
                         line.Y1 = p1.Y;
@@ -117,20 +103,7 @@ namespace TravellingSalesman.Views
                         pointCanvas.Children.Add(line);
                     }
 
-                    Line l = new Line();
-                    l.Stroke = Brushes.LightSteelBlue;
-
-                    p1 = points.ElementAt(0);
-                    p2 = points.Last();
-                    l.X1 = p1.X;
-                    l.X2 = p2.X;
-                    l.Y1 = p1.Y;
-                    l.Y2 = p2.Y;
-
-                    l.StrokeThickness = 2;
-                    pointCanvas.Children.Add(l);
-
-                    lblDistance.Content = points.CalculateDistance();
+                    lblDistance.Content = edges.CalculateDistance();
                 }));
         }
     }

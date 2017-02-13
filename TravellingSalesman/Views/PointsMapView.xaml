@@ -50,7 +50,7 @@
                 </Style>
             </Button.Style>
         </Button>
-        <ProgressBar Grid.Row="2" Grid.Column="1" x:Name="pbCalculation" Minimum="0" Maximum="100" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+        <ProgressBar Grid.Row="2" Grid.Column="1" x:Name="pbCalculation" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
         <Label Grid.Row="2" Grid.Column="2" Content="{Binding ElementName=pbCalculation, Path=Value}" />
     </Grid>
 </UserControl>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TravellingSalesman.Models;
 
 namespace TravellingSalesman.Utils
 {
@@ -85,6 +86,25 @@ namespace TravellingSalesman.Utils
             return result;
         }
 
+        public static IEnumerable<Edge> TransformToEdges(this IEnumerable<Point> points)
+        {
+            List<Edge> edges = new List<Edge>();
+            for (int i = 1; i < points.Count(); i++)
+            {
+                Point start = points.ElementAt(i - 1);
+                Point end = points.ElementAt(i);
+                edges.Add(new Edge(start, end));
+            }
+
+            // Create cycle
+            if (points.Count() > 1)
+            {
+                edges.Add(new Edge(points.Last(), points.First()));
+            }
+
+            return edges;
+        }
+
         public static double CalculateDistance(this Point[] generation)
         {
             double sum = 0;
@@ -101,6 +121,11 @@ namespace TravellingSalesman.Utils
         public static double CalculateDistance(this IEnumerable<Point> generation)
         {
             return generation.ToArray().CalculateDistance();
+        }
+
+        public static double CalculateDistance(this IEnumerable<Edge> edges)
+        {
+            return edges.Sum(e => (e.Start - e.End).Length);
         }
 
         public static T RandomElement<T>(this IEnumerable<T> enumerable)

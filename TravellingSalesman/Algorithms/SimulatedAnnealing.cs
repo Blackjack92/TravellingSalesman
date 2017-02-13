@@ -50,7 +50,7 @@ namespace TravellingSalesman.Algorithms
 
             IEnumerable<Point> points = args.Argument as IEnumerable<Point>;
             Point[] generation = points.ToArray();
-            OnCalculated(generation);
+            OnCalculated(generation.TransformToEdges());
 
             double fitness = generation.CalculateDistance();
             double temperature = 50;
@@ -81,7 +81,7 @@ namespace TravellingSalesman.Algorithms
                         generation = newGeneration;
                         fitness = newFitness;
                         // Return always the better generation
-                        OnCalculated(generation);
+                        OnCalculated(generation.TransformToEdges());
                     }
 
                     // Recalculate the temperature

@@ -50,7 +50,7 @@ namespace TravellingSalesman.Algorithms
                     if (bestPermutation.CalculateDistance() > permutation.CalculateDistance())
                     {
                         bestPermutation = permutation;
-                        OnCalculated(bestPermutation);
+                        OnCalculated(bestPermutation.TransformToEdges());
                     }
 
                     count++;

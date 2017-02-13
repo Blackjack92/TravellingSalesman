@@ -10,11 +10,11 @@ namespace TravellingSalesman.Algorithms
         public string Name { get; protected set; }
 
         public event EdgesCalculatedHandler EdgesCalculated;
-        public delegate void EdgesCalculatedHandler(object sender, IEnumerable<Point> points);
+        public delegate void EdgesCalculatedHandler(object sender, IEnumerable<Edge> edges);
 
-        protected void OnCalculated(IEnumerable<Point> points)
+        protected void OnCalculated(IEnumerable<Edge> edges)
         {
-            EdgesCalculated?.Invoke(this, points);
+            EdgesCalculated?.Invoke(this, edges);
         }
 
         public event CalculationProgressChangedEventHandler ProgressChanged;

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using TravellingSalesman.Algorithms;
@@ -12,9 +9,14 @@ using TravellingSalesman.Utils;
 
 namespace TravellingSalesman.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : NotifyPropertyChangedBase
     {
         public ObservableCollection<Point> Points { get; }
+        public ObservableCollection<Edge> Edges { get; }
+
+        public int Progress { get { return progress; } private set { progress = value; OnPropertyChanged(); } }
+        private int progress;
+
         public Algorithm Algorithm { get; set; }
         public DelegateCommand StartCommand { get; }
         public ICommand AddCommand { get; }
@@ -34,29 +36,7 @@ namespace TravellingSalesman.ViewModels
         private string x;
         private string y;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        // Create the OnPropertyChanged method to raise the event
-        // This could be replaced by using PostSharp
-        protected void OnPropertyChanged([CallerMemberName]string name = "Default")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
-        public event EdgesCalculatedHandler EdgesCalculated;
-        public delegate void EdgesCalculatedHandler(object sender, IEnumerable<Point> points);
-
-        protected void OnCalculated(IEnumerable<Point> points)
-        {
-            EdgesCalculated?.Invoke(this, points);
-        }
-
-        public event CalculationProgressChangedEventHandler ProgressChanged;
-        public delegate void CalculationProgressChangedEventHandler(object sender, int progress);
-
-        protected void OnProgressChanged(int progress)
-        {
-            ProgressChanged?.Invoke(this, progress);
-        }
 
         public bool IsAlgorithmRunning
         {
@@ -76,11 +56,19 @@ namespace TravellingSalesman.ViewModels
             Algorithms.Add(new BruteForce());
             Algorithms.ForEach(a =>
             {
-                a.EdgesCalculated += (sender, points) => OnCalculated(points);
-                a.ProgressChanged += (sender, progress) => OnProgressChanged(progress);
+                a.EdgesCalculated += (sender, edges) => {
+                    Edges.Clear();
+                    foreach (var edge in edges)
+                    {
+                        Edges.Add(edge);
+                    }
+                };
+
+                a.ProgressChanged += (sender, progress) => Progress = progress;
                 a.EdgesCalculationFinished += AlgorithmFinished;
             });
 
+            Edges = new ObservableCollection<Edge>();
             Points = new ObservableCollection<Point>();
             Points.Add(new Point(0, 0));
             Points.Add(new Point(150, 150));
