@@ -39,7 +39,7 @@ namespace TravellingSalesman.Views
 
         private void Points_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            pointCanvas.Children.Clear();
+            //pointCanvas.Children.Clear();
             drawPoints();
         }
 
@@ -69,7 +69,7 @@ namespace TravellingSalesman.Views
                 double left = point.X - (width / 2);
                 double top = point.Y - (height / 2);
                 myEllipse.Margin = new Thickness(left, top, 0, 0);
-                pointCanvas.Children.Add(myEllipse);
+                //pointCanvas.Children.Add(myEllipse);
             }
         }
 
@@ -81,27 +81,27 @@ namespace TravellingSalesman.Views
                     List<Edge> edges = model.Edges.ToList();
 
                     // Remove all drawn edges
-                    List<Line> drawnEdges = pointCanvas.Children.OfType<Line>().ToList();
-                    foreach (var edge in drawnEdges)
-                    {
-                        pointCanvas.Children.Remove(edge);
-                    }
+                    //List<Line> drawnEdges = pointCanvas.Children.OfType<Line>().ToList();
+                    //foreach (var edge in drawnEdges)
+                    //{
+                    //    pointCanvas.Children.Remove(edge);
+                    //}
 
-                    foreach (var edge in edges)
-                    {
-                        Line line = new Line();
-                        line.Stroke = Brushes.LightSteelBlue;
+                    //foreach (var edge in edges)
+                    //{
+                    //    Line line = new Line();
+                    //    line.Stroke = Brushes.LightSteelBlue;
 
-                        Point p1 = edge.Start;
-                        Point p2 = edge.End;
-                        line.X1 = p1.X;
-                        line.X2 = p2.X;
-                        line.Y1 = p1.Y;
-                        line.Y2 = p2.Y;
+                    //    Point p1 = edge.Start;
+                    //    Point p2 = edge.End;
+                    //    line.X1 = p1.X;
+                    //    line.X2 = p2.X;
+                    //    line.Y1 = p1.Y;
+                    //    line.Y2 = p2.Y;
 
-                        line.StrokeThickness = 2;
-                        pointCanvas.Children.Add(line);
-                    }
+                    //    line.StrokeThickness = 2;
+                    //    pointCanvas.Children.Add(line);
+                    //}
 
                     lblDistance.Content = edges.CalculateDistance();
                 }));

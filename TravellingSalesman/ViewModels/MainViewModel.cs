@@ -63,11 +63,15 @@ namespace TravellingSalesman.ViewModels
             Algorithms.ForEach(a =>
             {
                 a.EdgesCalculated += (sender, edges) => {
-                    Edges.Clear();
-                    foreach (var edge in edges)
-                    {
-                        Edges.Add(edge);
-                    }
+                    App.Current.Dispatcher.Invoke(
+                        () =>
+                        {
+                            Edges.Clear();
+                            foreach (var edge in edges)
+                            {
+                                Edges.Add(edge);
+                            }
+                        });
                 };
 
                 a.ProgressChanged += (sender, progress) => Progress = progress;

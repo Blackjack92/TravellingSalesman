@@ -11,6 +11,7 @@
     
     <UserControl.Resources>
         <utils:InvertConverter x:Key="Inverter" />
+        <utils:CenteringConverter x:Key="Centering" />
     </UserControl.Resources>
 
     <Grid>
@@ -40,7 +41,44 @@
             <Label Content="{Binding Algorithm.Runtime}" />
         </StackPanel>
 
-        <Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />
+        <!-- Draw points -->
+        <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Points}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="Point">
+                    <Ellipse Fill="Yellow" Width="10" Height="10"
+                             StrokeThickness="2" Stroke="Black" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource Centering}, ConverterParameter=10}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource Centering}, ConverterParameter=10}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+
+        <!-- Draw edges -->
+        <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Edges}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:Edge}">
+                    <Line Stroke="LightSteelBlue" StrokeThickness="2"
+                          X1="{Binding Start.X}" X2="{Binding End.X}"
+                          Y1="{Binding Start.Y}" Y2="{Binding End.Y}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--<Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />-->
         
         <Button Grid.Row="2" Grid.Column="0" Command="{Binding StartCommand}" HorizontalAlignment="Left">
             <Button.Style>
