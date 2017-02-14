@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TravellingSalesman.Views"
+        xmlns:utils="clr-namespace:TravellingSalesman.Utils"
         xmlns:viewModels="clr-namespace:TravellingSalesman.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="700">
@@ -12,13 +13,35 @@
         <viewModels:MainViewModel />
     </Window.DataContext>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Window.Resources>
+        <utils:InvertConverter x:Key="Inverter" />
+    </Window.Resources>
+    
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" Command="{Binding OpenCommand}"/>
+                <MenuItem Header="_Save" Command="{Binding SaveCommand}" />
+                <Separator />
+                <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+            </MenuItem>
+        </Menu>
 
-        <local:PointsMapView Grid.Row="0"  />
-        <local:PointsListView Grid.Column="1"  />
-    </Grid>
+        <TabControl TabStripPlacement="Bottom">
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <local:PointsMapView Grid.Row="0"  />
+                    <local:PointsListView Grid.Column="1"  />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Statistic">
+                <Label Content="Super statistic" />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>

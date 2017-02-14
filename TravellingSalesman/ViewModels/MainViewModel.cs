@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using TravellingSalesman.Algorithms;
 using TravellingSalesman.Models;
@@ -15,6 +16,9 @@ namespace TravellingSalesman.ViewModels
         public ObservableCollection<Point> Points { get; }
         public ObservableCollection<Edge> Edges { get; }
 
+        public double Distance { get { return distance; } private set { distance = value; OnPropertyChanged(); } }
+        private double distance;
+
         public int Progress { get { return progress; } private set { progress = value; OnPropertyChanged(); } }
         private int progress;
 
@@ -23,6 +27,9 @@ namespace TravellingSalesman.ViewModels
 
         public DelegateCommand StartCommand { get; }
         public ICommand AddCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand OpenCommand { get; }
+        public ICommand ExitCommand { get; }
         public List<Algorithm> Algorithms { get; private set; }
 
         public string X
@@ -71,6 +78,8 @@ namespace TravellingSalesman.ViewModels
                             {
                                 Edges.Add(edge);
                             }
+
+                            Distance = Edges.CalculateDistance();
                         });
                 };
 
@@ -94,6 +103,65 @@ namespace TravellingSalesman.ViewModels
             Algorithm = Algorithms[0];
             StartCommand = new DelegateCommand(Calculate);
             AddCommand = new DelegateCommand(Add);
+            ExitCommand = new DelegateCommand((obj) => Application.Current.Shutdown());
+            OpenCommand = new DelegateCommand(Open);
+            SaveCommand = new DelegateCommand(Save);
+        }
+
+        private void Save(object obj)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "CSV File|*.csv";
+            dialog.Title = "Save to file";
+            dialog.ShowDialog();
+
+            if (!string.IsNullOrEmpty(dialog.FileName))
+            {
+                using (var writer = new StreamWriter(dialog.FileName))
+                {
+                    foreach (var point in Points)
+                    {
+                        var first = point.X;
+                        var second = point.Y;
+                        var line = string.Format("{0},{1}", first, second);
+                        writer.WriteLine(line);
+                        writer.Flush();
+                    }
+                }
+            }
+        }
+
+        private void Open(object obj)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "CSV File|*.csv";
+            dialog.Title = "Open file";
+            dialog.ShowDialog();
+
+            if (!string.IsNullOrEmpty(dialog.FileName))
+            {
+                Edges.Clear();
+                Points.Clear();
+
+                using(var reader = new StreamReader(File.OpenRead(dialog.FileName)))
+                {
+                    while(!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        string[] coordinates = line.Split(',');
+
+                        if (coordinates.Length == 2)
+                        {
+                            int x;
+                            int y;
+                            if (int.TryParse(coordinates[0], out x) && int.TryParse(coordinates[1], out y))
+                            {
+                                Points.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void Add(object obj)

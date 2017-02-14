@@ -12,9 +12,10 @@
     <UserControl.Resources>
         <utils:InvertConverter x:Key="Inverter" />
         <utils:CenteringConverter x:Key="Centering" />
+        <utils:MethodToValueConverter x:Key="MethodToValue" />
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -37,15 +38,17 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <Label Content="Distance:" />
-            <Label x:Name="lblDistance" />
+            <Label Content="{Binding Distance}" />
             <Label Content="{Binding Algorithm.Runtime}" />
         </StackPanel>
 
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Grid>
         <!-- Draw points -->
-        <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Points}">
+        <ItemsControl ItemsSource="{Binding Points}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas />
+                    <Canvas Height="500" Width="500" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -66,7 +69,7 @@
         <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Edges}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas />
+                    <Canvas Height="500" Width="500" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -77,7 +80,8 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
+            </Grid>
+        </ScrollViewer>
         <!--<Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />-->
         
         <Button Grid.Row="2" Grid.Column="0" Command="{Binding StartCommand}" HorizontalAlignment="Left">
