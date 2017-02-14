@@ -65,6 +65,7 @@
     <Compile Include="Algorithms\BruteForce.cs" />
     <Compile Include="Algorithms\SimulatedAnnealing.cs" />
     <Compile Include="Models\Edge.cs" />
+    <Compile Include="Models\StatisticEntry.cs" />
     <Compile Include="Utils\CenteringConverter.cs" />
     <Compile Include="Utils\DelegateCommand.cs" />
     <Compile Include="Utils\InvertConverter.cs" />

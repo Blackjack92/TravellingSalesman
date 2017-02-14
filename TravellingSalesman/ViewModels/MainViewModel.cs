@@ -16,6 +16,8 @@ namespace TravellingSalesman.ViewModels
         public ObservableCollection<Point> Points { get; }
         public ObservableCollection<Edge> Edges { get; }
 
+        public ObservableCollection<StatisticEntry> Statistics { get; }
+
         public double Distance { get { return distance; } private set { distance = value; OnPropertyChanged(); } }
         private double distance;
 
@@ -87,6 +89,7 @@ namespace TravellingSalesman.ViewModels
                 a.EdgesCalculationFinished += AlgorithmFinished;
             });
 
+            Statistics = new ObservableCollection<StatisticEntry>();
             Edges = new ObservableCollection<Edge>();
             Points = new ObservableCollection<Point>();
             Points.Add(new Point(0, 0));
@@ -196,6 +199,8 @@ namespace TravellingSalesman.ViewModels
         {
             IsAlgorithmRunning = false;
             StartCommand.RaiseCanExecuteChanged();
+
+            Statistics.Add(new StatisticEntry(Algorithm.Name, Distance, Algorithm.Runtime));
         }
 
         private void Calculate(object obj)

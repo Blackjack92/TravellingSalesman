@@ -69,6 +69,7 @@ namespace TravellingSalesman.Algorithms
 
         protected void OnCalculationFinished()
         {
+            timer.Stop();
             EdgesCalculationFinished?.Invoke(this);
         }
     }
