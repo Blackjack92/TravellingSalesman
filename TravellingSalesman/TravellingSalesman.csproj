@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,9 +69,9 @@
     <Compile Include="Models\Edge.cs" />
     <Compile Include="Models\StatisticEntry.cs" />
     <Compile Include="Utils\CenteringConverter.cs" />
+    <Compile Include="Utils\CSVHelper.cs" />
     <Compile Include="Utils\DelegateCommand.cs" />
     <Compile Include="Utils\InvertConverter.cs" />
-    <Compile Include="Utils\MethodToValueConverter.cs" />
     <Compile Include="Utils\NotifyPropertyChangedBase.cs" />
     <Compile Include="Utils\SelectionToColorConverter.cs" />
     <Compile Include="Utils\TSExtensions.cs" />
@@ -80,6 +81,13 @@
     <Compile Include="Views\PointsMapView.xaml.cs">
       <DependentUpon>PointsMapView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\StatisticsView.xaml.cs">
+      <DependentUpon>StatisticsView.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Styles\TSStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -101,6 +109,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\StatisticsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -117,7 +129,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -130,7 +142,20 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\Garbage-black-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Garbage-white-64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Add-black-64.png" />
+    <Resource Include="Images\Add-white-64.png" />
+    <Resource Include="Images\Play-black-64.png" />
+    <Resource Include="Images\Play-white-64.png" />
+    <Resource Include="Images\Stop-white-64.png" />
+    <Resource Include="Images\Stop-black-64.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\PostSharp.4.3.28\tools\PostSharp.targets" Condition="Exists('..\packages\PostSharp.4.3.28\tools\PostSharp.targets')" />
   <Target Name="EnsurePostSharpImported" BeforeTargets="BeforeBuild" Condition="'$(PostSharp30Imported)' == ''">

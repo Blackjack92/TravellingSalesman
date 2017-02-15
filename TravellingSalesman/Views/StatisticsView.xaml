@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="TravellingSalesman.Views.StatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TravellingSalesman.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <!-- Very simple statistic, which could be enhanced in later projects -->
+        <DataGrid x:Name="statistics" ItemsSource="{Binding Statistics}" IsReadOnly="True" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding AlgorithmName}" />
+                <DataGridTextColumn Header="Distance" Binding="{Binding Distance}" />
+                <DataGridTextColumn Header="Runtime" Binding="{Binding Runtime}" />
+            </DataGrid.Columns>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="400" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" FontWeight="Bold" Content="Path:" Margin="5" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Path}" TextWrapping="Wrap" />
+                    </Grid>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+
+        </DataGrid>
+    </Grid>
+</UserControl>

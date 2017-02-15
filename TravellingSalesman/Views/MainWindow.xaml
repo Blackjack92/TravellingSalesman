@@ -18,6 +18,7 @@
     </Window.Resources>
     
     <DockPanel SnapsToDevicePixels="True">
+        <!-- Menu -->
         <Menu DockPanel.Dock="Top" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Command="{Binding OpenCommand}"/>
@@ -56,6 +57,7 @@
                 </Style>
             </TabControl.Resources>
             
+            <!-- Main tab -->
             <TabItem Header="General">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -67,8 +69,10 @@
                     <local:PointsListView Grid.Column="1"  />
                 </Grid>
             </TabItem>
+            
+            <!-- Statistic tab -->
             <TabItem Header="Statistic">
-                <DataGrid ItemsSource="{Binding Statistics}" />
+                <local:StatisticsView />
             </TabItem>
         </TabControl>
     </DockPanel>

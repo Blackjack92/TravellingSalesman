@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using TravellingSalesman.Models;
 
 namespace TravellingSalesman.Utils
 {
+    /// <summary>
+    /// This converter is used to change the fill color from the selected point (city).
+    /// If some point is selected it is red filled otherwise yellow.
+    /// </summary>
     public class SelectionToColorConverter : IMultiValueConverter
     {
-        private readonly SolidColorBrush black = new SolidColorBrush(Colors.Black);
+        #region Readonly Fields
         private readonly SolidColorBrush red = new SolidColorBrush(Colors.Red);
         private readonly SolidColorBrush yellow = new SolidColorBrush(Colors.Yellow);
-
+        #endregion
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

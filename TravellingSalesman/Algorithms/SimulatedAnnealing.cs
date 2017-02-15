@@ -2,19 +2,43 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
 using TravellingSalesman.Models;
 using TravellingSalesman.Utils;
 
 namespace TravellingSalesman.Algorithms
 {
+    /// <summary>
+    /// A simulated annealing implementation for the TSP.
+    /// </summary>
     public class SimulatedAnnealing : Algorithm
     {
+        #region Algorithm-Settings
+        // Maximal number of generations, which will be tested
+        private readonly int maxNumberOfGenerations = 10000;
+        // Temperature decreasing factor
+        private readonly double alpha = 0.9;
+        // Start temperature
+        double temperature = 50;
+        // Minimal temperature
+        double temperatureStop = 1e-8;
+        #endregion
+
+        #region ctor
         public SimulatedAnnealing() : base()
         {
             Name = "Simulated Annealing";
         }
+        #endregion
 
+        #region Methods
+        /// <summary>
+        /// This is a implementation of the k-opt heuristic, with k = 2.
+        /// It cuts the connection of two points and reconnects the points so, 
+        /// that a tour is still possible and the amount tour crosses is minimized.
+        /// No optimal solution contains a cross of two connections!
+        /// </summary>
+        /// <param name="generation">Is a already found tour.</param>
+        /// <returns>A new tour</returns>
         private BindablePoint[] Lin2Opt(BindablePoint[] generation)
         {
             // Clone dictionary
@@ -38,6 +62,13 @@ namespace TravellingSalesman.Algorithms
             return newGeneration;
         }
 
+        /// <summary>
+        /// Explicite implementation of the run method, which will be executed
+        /// in its own BackgroundWorker.
+        /// </summary>
+        /// <param name="sender">Is the BackgroundWorker.</param>
+        /// <param name="args">Arguments for the calculation. Normally they contain
+        /// a list of all points (cities).</param>
         protected override void RunCalculation(object sender, DoWorkEventArgs args)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -46,19 +77,18 @@ namespace TravellingSalesman.Algorithms
             BindablePoint[] generation = points.ToArray();
             OnCalculated(generation.TransformToEdges());
 
+            // Calculate first fitness (TSP evaluation value)
             double fitness = generation.CalculateDistance();
-            double temperature = 50;
-            double temperatureStop = 1e-8;
-            double numberOfSameTemperatureIterations = 10;
-            double alpha = 0.9;
-
-            int maxNumberOfGenerations = 1000;
+            double numberOfSameTemperatureIterations = points.Count();
             int numberOfGenerations = 0;
-            //int maxNumberOfGenerations = 10000;
-            List<int> fitnessValues = new List<int>();
 
+            // As long as the minimal temperature is not reached and the maximal 
+            // number of iterations is not reached, go ahead with calculation.
+            // The algorithm does not know if a best solution was found! - So different
+            // boundaries are needed.
             while (temperature > temperatureStop && numberOfGenerations < maxNumberOfGenerations)
             {
+                // This is used to cancel the worker
                 if (worker.CancellationPending == true)
                 {
                     args.Cancel = true;
@@ -66,6 +96,7 @@ namespace TravellingSalesman.Algorithms
                 }
                 else
                 {
+                    // Create a new generation and evaluate it
                     BindablePoint[] newGeneration = Lin2Opt(generation);
                     double newFitness = newGeneration.CalculateDistance();
 
@@ -85,12 +116,12 @@ namespace TravellingSalesman.Algorithms
                     }
 
                     numberOfGenerations++;
+                    // Calculate new progress and return some information to the user
                     int progress = (int)(numberOfGenerations * 100.0 / maxNumberOfGenerations);
                     OnProgressChanged(progress);
                 }
             }
-
-            OnProgressChanged(100);
         }
+        #endregion
     }
 }

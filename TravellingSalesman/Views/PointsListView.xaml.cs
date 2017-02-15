@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TravellingSalesman.Views
 {
@@ -28,12 +17,27 @@ namespace TravellingSalesman.Views
             yPos.PreviewTextInput += NumberPreviewTextInput;
         }
 
+        /// <summary>
+        /// This checks that no only numbers between 0-500 are entered for the point coordinations.
+        /// </summary>
+        /// <param name="sender">The TextBox.</param>
+        /// <param name="e">Arguments with the new entered character.</param>
         private void NumberPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            // TODO: Check does already contain the point
-
+            // Check if it is a character
             if (!char.IsDigit(e.Text, e.Text.Length - 1))
+            {
                 e.Handled = true;
+            }
+
+            // Check the number > 0 && <= 500
+            TextBox input = sender as TextBox;
+            int value;
+            if (int.TryParse(input.Text + e.Text, out value) && value > 500)
+            {
+                MessageBox.Show("The point has to be between x[0-500] and y[0-500].");
+                e.Handled = true;
+            }
         }
     }
 }

@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:TravellingSalesman"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary Source="Styles/TSStyles.xaml" />
     </Application.Resources>
 </Application>

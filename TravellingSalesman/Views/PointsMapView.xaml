@@ -9,12 +9,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="view">
-    
+
     <UserControl.Resources>
         <utils:InvertConverter x:Key="Inverter" />
         <utils:CenteringConverter x:Key="Centering" />
-        <utils:MethodToValueConverter x:Key="MethodToValue" />
         <utils:SelectionToColorConverter x:Key="SelectionToColor" />
+
+        <BitmapImage x:Key="PlaySource-white" UriSource="../Images/Play-white-64.png" />
+        <BitmapImage x:Key="PlaySource-black" UriSource="../Images/Play-black-64.png" />
+        <BitmapImage x:Key="StopSource-white" UriSource="../Images/Stop-white-64.png" />
+        <BitmapImage x:Key="StopSource-black" UriSource="../Images/Stop-black-64.png" />
     </UserControl.Resources>
 
     <Grid Background="White" SnapsToDevicePixels="True">
@@ -30,6 +34,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
+        <!-- Header -->
         <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="DarkGray">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -52,18 +57,19 @@
             <Label Grid.Column="4" Content="Runtime:" FontWeight="Bold" VerticalAlignment="Center" />
             <Label Grid.Column="5" Content="{Binding Algorithm.Runtime}" FontWeight="Bold" ContentStringFormat="F2" VerticalAlignment="Center" />
         </Grid>
-        
+
+        <!-- Point map with edges -->
         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid>
-        <!-- Draw points -->
-        <ItemsControl ItemsSource="{Binding Points}" Margin="5">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas Height="500" Width="500" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type models:BindablePoint}">
+                <!-- Draw points -->
+                <ItemsControl ItemsSource="{Binding Points}" Margin="5">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Height="500" Width="500" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:BindablePoint}">
                             <Ellipse Width="10" Height="10"
                              StrokeThickness="2" Stroke="Black">
                                 <Ellipse.Fill>
@@ -74,47 +80,103 @@
                                 </Ellipse.Fill>
                             </Ellipse>
                         </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource Centering}, ConverterParameter=10}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource Centering}, ConverterParameter=10}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-        </ItemsControl>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource Centering}, ConverterParameter=10}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource Centering}, ConverterParameter=10}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
 
-        <!-- Draw edges -->
-        <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Edges}" Margin="5">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas Height="500" Width="500" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type models:Edge}">
-                    <Line Stroke="LightSteelBlue" StrokeThickness="2"
+                <!-- Draw edges -->
+                <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Edges}" Margin="5">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Height="500" Width="500" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:Edge}">
+                            <Line Stroke="LightSteelBlue" StrokeThickness="2"
                           X1="{Binding Start.X}" X2="{Binding End.X}"
                           Y1="{Binding Start.Y}" Y2="{Binding End.Y}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Grid>
         </ScrollViewer>
-        <!--<Canvas x:Name="pointCanvas" Grid.Row="1" Grid.ColumnSpan="3" />-->
-        
-        <Button Grid.Row="2" Grid.Column="0" Command="{Binding StartCommand}" HorizontalAlignment="Left">
-            <Button.Style>
-                <Style TargetType="{x:Type Button}">
-                    <Setter Property="Content" Value="Start"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsAlgorithmRunning}" Value="True">
-                            <Setter Property="Content" Value="Stop"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-        </Button>
-        <ProgressBar Grid.Row="2" Grid.Column="1" x:Name="pbCalculation" Minimum="0" Maximum="100" Value="{Binding Progress, Mode=OneWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
-        <Label Grid.Row="2" Grid.Column="2" Content="{Binding ElementName=pbCalculation, Path=Value}" />
+
+        <!-- Start/Stop button and progressbar -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="3" Background="DarkGray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Width="50" Command="{Binding StartCommand}" HorizontalAlignment="Left">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                                    <Condition Binding="{Binding IsAlgorithmRunning}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource PlaySource-black}" Width="18" Height="18" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Background" Value="LightGreen" />
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="False" />
+                                    <Condition Binding="{Binding IsAlgorithmRunning}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource StopSource-black}" Width="18" Height="18" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Opacity" Value="0.5" />
+                                <Setter Property="Background" Value="Crimson" />
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                                    <Condition Binding="{Binding IsAlgorithmRunning}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource StopSource-black}" Width="18" Height="18" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Background" Value="Crimson" />
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="False" />
+                                    <Condition Binding="{Binding IsAlgorithmRunning}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource PlaySource-black}" Width="18" Height="18" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Background" Value="LightGreen" />
+                                <Setter Property="Opacity" Value="0.5" />
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <ProgressBar Grid.Column="1" x:Name="pbCalculation" Minimum="0" Maximum="100" Margin="2" Value="{Binding Progress, Mode=OneWay}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+            <Label Grid.Column="2" Content="Progress:" />
+            <Label Grid.Column="3" Content="{Binding ElementName=pbCalculation, Path=Value}" />
+        </Grid>
     </Grid>
 </UserControl>

@@ -1,30 +1,70 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using TravellingSalesman.Utils;
 
 namespace TravellingSalesman.Models
 {
-    public class BindablePoint : NotifyPropertyChangedBase
+    /// <summary>
+    /// This class is a kind of adapter for the Point struct, because the Point
+    /// is a struct and so there binding problems.
+    /// </summary>
+    public class BindablePoint : NotifyPropertyChangedBase, ICloneable
     {
-        public int X { get { return x; } set { x = value; OnPropertyChanged(); } }
-        private int x;
+        #region Properties
+        public double X { get { return instance.X; } set { instance.X = value; OnPropertyChanged(); } }
+        public double Y { get { return instance.Y; } set { instance.Y = value; OnPropertyChanged(); } }
+        #endregion
 
-        public int Y { get { return y; } set { y = value; OnPropertyChanged(); } }
-        private int y;
+        #region Private Fields
+        private Point instance;
+        #endregion
 
-        public BindablePoint(int x, int y)
+        #region ctor
+        public BindablePoint(double x, double y)
         {
-            this.X = x;
-            this.Y = y;
+            instance = new Point(x, y);
         }
+        #endregion
 
-        public Point ToPoint()
-        {
-            return new Point(x, y);
-        }
-
+        #region Methods
+        /// <summary>
+        /// Returns the length (distance) between two points. This is used for the
+        /// solution evaluation.
+        /// </summary>
+        /// <param name="point">The other point.</param>
+        /// <returns>Distance between the two points.</returns>
         public double GetLength(BindablePoint point)
         {
-            return (ToPoint() - point.ToPoint()).Length;
+            return point == null ? 0 : (instance - point.instance).Length;
         }
+
+        // override object.Equals
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            var point = obj as BindablePoint;
+            return instance.Equals(point.instance);
+        }
+
+        // override object.GetHashCode
+        public override int GetHashCode()
+        {
+            return instance.GetHashCode();
+        }
+
+        public object Clone()
+        {
+            return new BindablePoint(X, Y);
+        }
+
+        public override string ToString()
+        {
+            return "[" + X + "," + Y + "]";
+        }
+        #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -8,183 +9,181 @@ using System.Windows.Input;
 using TravellingSalesman.Algorithms;
 using TravellingSalesman.Models;
 using TravellingSalesman.Utils;
+using System;
 
 namespace TravellingSalesman.ViewModels
 {
+    /// <summary>
+    /// This class represents the ViewModel for all four views. 
+    /// This could be improved but for the actual size of the project 
+    /// it is sufficient.
+    /// </summary>
     public class MainViewModel : NotifyPropertyChangedBase
     {
-        public ObservableCollection<BindablePoint> Points { get; }
-        public ObservableCollection<Edge> Edges { get; }
+        #region Properties
+        public List<Algorithm> Algorithms { get; private set; }
 
-        public ObservableCollection<StatisticEntry> Statistics { get; }
+        public ObservableCollection<BindablePoint> Points { get; private set; }
+        public ObservableCollection<Edge> Edges { get; private set; }
+        public ObservableCollection<StatisticEntry> Statistics { get; private set;  }
 
         public BindablePoint SelectedPoint { get { return selectedPoint; } set { selectedPoint = value; OnPropertyChanged(); } }
+        public Algorithm Algorithm { get { return algorithm; } set { algorithm = value; OnPropertyChanged(); } }
+        public bool IsAlgorithmRunning { get { return isAlgorithmRunning; } private set { isAlgorithmRunning = value; OnPropertyChanged(); } }
+        public int Progress { get { return progress; } private set { progress = value; OnPropertyChanged(); } }
+        public double Distance { get { return distance; } private set { distance = value; OnPropertyChanged(); } }
+
+        // This is used for adding a new point (city)
+        public int X { get { return x; } set { x = value; OnPropertyChanged(); } }
+        public int Y { get { return y; } set { y = value; OnPropertyChanged(); } }
+        #endregion
+
+        #region Backing Fields
         private BindablePoint selectedPoint;
 
-        public double Distance { get { return distance; } private set { distance = value; OnPropertyChanged(); } }
-        private double distance;
+        private int x;
+        private int y;
 
-        public int Progress { get { return progress; } private set { progress = value; OnPropertyChanged(); } }
-        private int progress;
-
-        public Algorithm Algorithm { get { return algorithm; } set { algorithm = value; OnPropertyChanged(); } }
         private Algorithm algorithm;
+        private bool isAlgorithmRunning;
+        private int progress;
+        private double distance;
+        #endregion
 
+        #region Commands
+        // This needs to be a delegate command, so that it is possible to change 
+        // the button from running to stopped, when the algorithm is finished
         public DelegateCommand StartCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand OpenCommand { get; }
         public ICommand ExitCommand { get; }
-        public List<Algorithm> Algorithms { get; private set; }
+        public ICommand DeleteCommand { get; }
+        #endregion
 
-        public string X
-        {
-            get { return x; }
-            set
-            {
-                x = value;
-                OnPropertyChanged();
-            }
-        }
-        public string Y { get { return y; } set { y = value; OnPropertyChanged(); } }
-
-
-        private string x;
-        private string y;
-
-
-
-        public bool IsAlgorithmRunning
-        {
-            get { return isAlgorithmRunning; }
-            private set
-            {
-                isAlgorithmRunning = value;
-                OnPropertyChanged();
-            }
-        }
-        private bool isAlgorithmRunning;
-
+        #region ctor
         public MainViewModel()
         {
-            
-
             Algorithms = new List<Algorithm>();
             Algorithms.Add(new SimulatedAnnealing());
             Algorithms.Add(new BruteForce());
             Algorithms.ForEach(a =>
             {
-                a.EdgesCalculated += (sender, edges) => {
-                    App.Current.Dispatcher.Invoke(
-                        () =>
-                        {
-                            Edges.Clear();
-                            foreach (var edge in edges)
-                            {
-                                Edges.Add(edge);
-                            }
-
-                            Distance = Edges.CalculateDistance();
-                        });
-                };
-
+                a.EdgesCalculated += UpdateEdges;
                 a.ProgressChanged += (sender, progress) => Progress = progress;
                 a.EdgesCalculationFinished += AlgorithmFinished;
             });
+            // Select the first algorithm in the list
+            Algorithm = Algorithms[0];
 
             Statistics = new ObservableCollection<StatisticEntry>();
             Edges = new ObservableCollection<Edge>();
             Points = new ObservableCollection<BindablePoint>();
-            Points.Add(new BindablePoint(0, 0));
-            Points.Add(new BindablePoint(150, 150));
-            Points.Add(new BindablePoint(250, 150));
-            Points.Add(new BindablePoint(50, 250));
-            Points.Add(new BindablePoint(300, 100));
-            Points.Add(new BindablePoint(250, 400));
-            Points.Add(new BindablePoint(150, 100));
-            Points.Add(new BindablePoint(250, 100));
-            Points.Add(new BindablePoint(400, 400));
-            Points.Add(new BindablePoint(450, 380));
-            Points.Add(new BindablePoint(0, 320));
-            Algorithm = Algorithms[0];
+
+            // Set commands
             StartCommand = new DelegateCommand(Calculate);
             AddCommand = new DelegateCommand(Add);
             ExitCommand = new DelegateCommand((obj) => Application.Current.Shutdown());
             OpenCommand = new DelegateCommand(Open);
-            SaveCommand = new DelegateCommand(Save);
+            SaveCommand = new DelegateCommand((obj) => CSVHelper.Open(Points));
+            DeleteCommand = new DelegateCommand(DeletePoint);
+
+            // Register to points collection changes, this is necessary to 
+            // update the view, when a point was deleted
+            Points.CollectionChanged += PointsCollectionChanged;
         }
+        #endregion
 
-        private void Save(object obj)
-        {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "CSV File|*.csv";
-            dialog.Title = "Save to file";
-            dialog.ShowDialog();
-
-            if (!string.IsNullOrEmpty(dialog.FileName))
-            {
-                using (var writer = new StreamWriter(dialog.FileName))
-                {
-                    foreach (var point in Points)
-                    {
-                        var first = point.X;
-                        var second = point.Y;
-                        var line = string.Format("{0},{1}", first, second);
-                        writer.WriteLine(line);
-                        writer.Flush();
-                    }
-                }
-            }
-        }
-
+        #region Methods
+        /// <summary>
+        /// This method loads points from a given file.
+        /// </summary>
+        /// <param name="obj">Is the CommandParameter, which is unused.</param>
         private void Open(object obj)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "CSV File|*.csv";
-            dialog.Title = "Open file";
-            dialog.ShowDialog();
+            // This clears the edges and points before new data gets loaded
+            // This could be added to a callback method, so that it is only
+            // called, when the load was successfull
+            Edges.Clear();
+            Points.Clear();
 
-            if (!string.IsNullOrEmpty(dialog.FileName))
+            CSVHelper.Open(Points);
+        }
+
+        /// <summary>
+        /// Delets a point from the list.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void DeletePoint(object obj)
+        {
+            if (SelectedPoint != null)
             {
-                Edges.Clear();
-                Points.Clear();
-
-                using(var reader = new StreamReader(File.OpenRead(dialog.FileName)))
-                {
-                    while(!reader.EndOfStream)
-                    {
-                        string line = reader.ReadLine();
-                        string[] coordinates = line.Split(',');
-
-                        if (coordinates.Length == 2)
-                        {
-                            int x;
-                            int y;
-                            if (int.TryParse(coordinates[0], out x) && int.TryParse(coordinates[1], out y))
-                            {
-                                Points.Add(new BindablePoint(x, y));
-                            }
-                        }
-                    }
-                }
+                Points.Remove(SelectedPoint);
             }
         }
 
+        /// <summary>
+        /// Updates the edges. This means the old edges are removed and the 
+        /// new one are added into the list.
+        /// </summary>
+        /// <param name="sender">Algorithm, which calculated the edges.</param>
+        /// <param name="edges">Connections between the cities.</param>
+        private void UpdateEdges(object sender, IEnumerable<Edge> edges)
+        {
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    // Set the new solution
+                    Edges.Clear();
+                    foreach (var edge in edges)
+                    {
+                        Edges.Add(edge);
+                    }
+
+                    // Update the tour distance
+                    Distance = Edges.CalculateDistance();
+                });
+        }
+
+        /// <summary>
+        /// This is used for updating the edges, when a point was removed.
+        /// Otherwise there would be edges, without legal points.
+        /// </summary>
+        /// <param name="sender">The edge collection.</param>
+        /// <param name="e">The args, which contains the changed items.</param>
+        private void PointsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                BindablePoint point = e.OldItems.OfType<BindablePoint>().First();
+                if (point != null)
+                {
+                    // Get the edges, which referenced the deleted point
+                    Edge to = Edges.First(edge => edge.End.Equals(point));
+                    Edge from = Edges.First(edge => edge.Start.Equals(point));
+
+                    // Create a new edge, which combines the old points
+                    // E.g. A-->B-->C (B removed) A-->C
+                    Edge combine = new Edge(to.Start, from.End);
+
+                    // Remove the old edges add the new combined edge
+                    Edges.Remove(to);
+                    Edges.Remove(from);
+                    Edges.Add(combine);
+                }
+            }
+
+            // Calculate the new distance after the edges where changed.
+            Distance = Edges.CalculateDistance();
+        }
+        
+        /// <summary>
+        /// Adds a point to the point list. If the point already exists, a MessageBox appears.
+        /// </summary>
+        /// <param name="obj">The CommandParameter, which is unused.</param>
         private void Add(object obj)
         {
-            int x;
-            if (!int.TryParse(X, out x))
-            {
-                x = 0;
-            }
-
-            int y;
-            if (!int.TryParse(Y, out y))
-            {
-                y = 0;
-            }
-
-            BindablePoint p = new BindablePoint(x, y);
+            BindablePoint p = new BindablePoint(X, Y);
             if (Points.Any(point => point.Equals(p)))
             {
                 MessageBox.Show("Point was already added.");
@@ -192,27 +191,37 @@ namespace TravellingSalesman.ViewModels
             else
             {
                 Points.Add(p);
-                X = "";
-                Y = "";
+                X = 0;
+                Y = 0;
             }
 
         }
 
+        /// <summary>
+        /// This method updates the IsAlgorithmRunning and adds a algorithm statistic.
+        /// </summary>
+        /// <param name="sender">The algorithm, which was finished.</param>
         private void AlgorithmFinished(object sender)
         {
             IsAlgorithmRunning = false;
             StartCommand.RaiseCanExecuteChanged();
 
-            Statistics.Add(new StatisticEntry(Algorithm.Name, Distance, Algorithm.Runtime));
+            Statistics.Add(new StatisticEntry(Algorithm.Name, Distance, Algorithm.Runtime, Edges.Clone()));
         }
 
+        /// <summary>
+        /// Starts the execution of the selected algorithm. When the algorithm is running
+        /// it gets stopped. This is a kind of toggle behavior.
+        /// </summary>
+        /// <param name="obj"></param>
         private void Calculate(object obj)
         {
             if (IsAlgorithmRunning)
             {
                 Algorithm.Stop();
             }
-            else
+            // Start calculation only when >= 2 points exist, otherwise it has no sense
+            else if (Points.Count >= 2)
             {
                 IsAlgorithmRunning = true;
                 StartCommand.RaiseCanExecuteChanged();
@@ -220,5 +229,6 @@ namespace TravellingSalesman.ViewModels
                 Algorithm.Run(Points);
             }
         }
+        #endregion
     }
 }

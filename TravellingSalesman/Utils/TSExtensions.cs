@@ -8,19 +8,18 @@ using TravellingSalesman.Models;
 
 namespace TravellingSalesman.Utils
 {
+    /// <summary>
+    /// Some extension methods for this project.
+    /// </summary>
     public static class TSExtensions
     {
-        public static T RandomElement<T>(this T[] array)
-        {
-            return array.RandomElementUsing(new Random());
-        }
-
-        public static T RandomElementUsing<T>(this T[] array, Random rand)
-        {
-            int index = rand.Next(0, array.Count());
-            return array[index];
-        }
-
+        /// <summary>
+        /// Returns a random index from a given array.
+        /// </summary>
+        /// <typeparam name="T">Type of the array elements.</typeparam>
+        /// <param name="array">Reference to the array.</param>
+        /// <returns>A random index from the array. When it does not contain 
+        /// any item the return value is 0.</returns>
         public static int RandomIndex<T>(this T[] array)
         {
             return new Random().Next(0, array.Count());
@@ -52,19 +51,25 @@ namespace TravellingSalesman.Utils
             }
         }
 
+        // Enumerates over contents of both lists.
+        // This method is a sub method form the Permute
+        public static IEnumerable<T> Concat<T>(IEnumerable<T> a, IEnumerable<T> b)
+        {
+            foreach (T item in a) { yield return item; }
+            foreach (T item in b) { yield return item; }
+        }
+
+        /// <summary>
+        /// Calculates the factorial from a given number i.
+        /// </summary>
+        /// <param name="i">The number from, which the factorial should be calculated.</param>
+        /// <returns>The factorial.</returns>
         public static int Factorial(this int i)
         {
             int result = i < 0 ? -1 : i == 0 || i == 1 ? 1 : 1;
             if (i > 0)
                 Enumerable.Range(1, i).ToList<int>().ForEach(element => result = result * element);
             return result;
-        }
-
-        // Enumerates over contents of both lists.
-        public static IEnumerable<T> Concat<T>(IEnumerable<T> a, IEnumerable<T> b)
-        {
-            foreach (T item in a) { yield return item; }
-            foreach (T item in b) { yield return item; }
         }
 
         // Enumerates over all items in the input, skipping over the item
@@ -79,6 +84,15 @@ namespace TravellingSalesman.Utils
             }
         }
 
+        /// <summary>
+        /// Returns a sub array from a given one.
+        /// </summary>
+        /// <typeparam name="T">Type of the array.</typeparam>
+        /// <param name="data">Reference to the array.</param>
+        /// <param name="index">Start index from which the sub array should be taken.</param>
+        /// <param name="length">Number of array elements, which should be added to the new 
+        /// sub array (beginning by the start). </param>
+        /// <returns></returns>
         public static T[] SubArray<T>(this T[] data, int index, int length)
         {
             T[] result = new T[length];
@@ -86,6 +100,13 @@ namespace TravellingSalesman.Utils
             return result;
         }
 
+        /// <summary>
+        /// Creates Edges from a given BindablePoint IEnumerable. Important is, that the 
+        /// order from the points is responsible for the edge creation. This means two 
+        /// points, which are ordered in a row create an edge.
+        /// </summary>
+        /// <param name="points">List, wich contains all the points (cities).</param>
+        /// <returns>The connected points (cities).</returns>
         public static IEnumerable<Edge> TransformToEdges(this IEnumerable<BindablePoint> points)
         {
             List<Edge> edges = new List<Edge>();
@@ -105,38 +126,53 @@ namespace TravellingSalesman.Utils
             return edges;
         }
 
+        /// <summary>
+        /// Calculates the tour length. This is used for evaluation.
+        /// </summary>
+        /// <param name="generation">The tour, which should be evaluated.</param>
+        /// <returns>The tour length.</returns>
         public static double CalculateDistance(this BindablePoint[] generation)
         {
             double sum = 0;
             for (int i = 1; i < generation.Count(); i++)
             {
-                sum += (generation[i - 1].ToPoint() - generation[i].ToPoint()).Length;
+                sum += generation[i - 1].GetLength(generation[i]);
             }
 
-            sum += generation.Count() >= 2 ? (generation[generation.Count() - 1].ToPoint() - generation[0].ToPoint()).Length : 0;
+            sum += generation.Count() >= 2 ? generation[generation.Count() - 1].GetLength(generation[0]) : 0;
 
             return sum;
         }
 
+        /// <summary>
+        /// Calculates the tour length. This is used for evaluation.
+        /// </summary>
+        /// <param name="generation">The tour, which should be evaluated.</param>
+        /// <returns>The tour length.</returns>
         public static double CalculateDistance(this IEnumerable<BindablePoint> generation)
         {
             return generation.ToArray().CalculateDistance();
         }
 
+        /// <summary>
+        /// Calculates the tour length. This is used for evaluation.
+        /// </summary>
+        /// <param name="edges">The tour, which should be evaluated.</param>
+        /// <returns>The tour length.</returns>
         public static double CalculateDistance(this IEnumerable<Edge> edges)
         {
-            return edges.Sum(e => (e.Start.ToPoint() - e.End.ToPoint()).Length);
+            return edges.Sum(e => (e.Start.GetLength(e.End)));
         }
 
-        public static T RandomElement<T>(this IEnumerable<T> enumerable)
+        /// <summary>
+        /// Creates a clone of a given list.
+        /// </summary>
+        /// <typeparam name="T">Type of the list.</typeparam>
+        /// <param name="listToClone">Reference of the list, which should be cloned.</param>
+        /// <returns>The cloned list.</returns>
+        public static IList<T> Clone<T>(this IList<T> listToClone) where T : ICloneable
         {
-            return enumerable.RandomElementUsing(new Random());
-        }
-
-        public static T RandomElementUsing<T>(this IEnumerable<T> enumerable, Random rand)
-        {
-            int index = rand.Next(0, enumerable.Count());
-            return enumerable.ElementAt(index);
+            return listToClone.Select(item => (T)item.Clone()).ToList();
         }
     }
 }

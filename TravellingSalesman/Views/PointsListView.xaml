@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:properties="clr-namespace:TravellingSalesman.Properties"
              xmlns:local="clr-namespace:TravellingSalesman.Views"
              xmlns:utils="clr-namespace:TravellingSalesman.Utils"
              mc:Ignorable="d" 
@@ -10,6 +11,10 @@
 
     <UserControl.Resources>
         <utils:InvertConverter x:Key="Inverter" />
+        <BitmapImage x:Key="GarbageSource-white" UriSource="../Images/Garbage-white-64.png" />
+        <BitmapImage x:Key="GarbageSource-black" UriSource="../Images/Garbage-black-64.png" />
+        <BitmapImage x:Key="AddSource-white" UriSource="../Images/Add-white-64.png" />
+        <BitmapImage x:Key="AddSource-black" UriSource="../Images/Add-black-64.png" />
     </UserControl.Resources>
 
     <Grid SnapsToDevicePixels="True" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
@@ -19,9 +24,40 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label Content="Points" Grid.Row="0" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="White" Background="Gray" />
+        <!-- Header with a button to remove a point -->
+        <Grid Grid.Row="0" Background="Gray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Points" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="White" />
 
-        <DataGrid ItemsSource="{Binding Points}" Validation.ErrorTemplate="{x:Null}" Grid.Row="1" ColumnWidth="*" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" BorderBrush="Transparent" BorderThickness="0" CanUserAddRows="False" CanUserDeleteRows="True" SelectedItem="{Binding SelectedPoint}" AutoGenerateColumns="False">
+            <Button Grid.Column="2" BorderBrush="Transparent" BorderThickness="0" Margin="5" Command="{Binding DeleteCommand}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <Image Source="{StaticResource GarbageSource-white}" Width="18" Height="18" />
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource GarbageSource-black}" Width="18" Height="18" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+
+        <!-- DataGrid with the points -->
+        <DataGrid ItemsSource="{Binding Points}" Validation.ErrorTemplate="{x:Null}" Grid.Row="1" ColumnWidth="*" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" BorderBrush="Transparent" BorderThickness="0" CanUserAddRows="False" CanUserDeleteRows="False" SelectedItem="{Binding SelectedPoint}" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="X">
                     <DataGridTemplateColumn.CellTemplate>
@@ -40,7 +76,8 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Grid Grid.Row="2" >
+        <!-- Button and TextBoxes to add a new point -->
+        <Grid Grid.Row="2" Background="Gray">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -48,12 +85,33 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            
-            <Label Grid.Column="0" Content="x:" />
-            <TextBox x:Name="xPos" Text="{Binding X}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
-            <Label Grid.Column="2" Content="y:" />
-            <TextBox x:Name="yPos" Text="{Binding Y}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
-            <Button Grid.Column="4" Content="Add" Command="{Binding AddCommand}" />
+
+            <Label Grid.Column="0" Content="x:" Foreground="White" />
+            <TextBox x:Name="xPos" Text="{Binding X}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="2" />
+            <Label Grid.Column="2" Content="y:" Foreground="White" />
+            <TextBox x:Name="yPos" Text="{Binding Y}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="2" />
+            <Button Grid.Column="4" Command="{Binding AddCommand}" Padding="5">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">
+                        <Setter Property="Content">
+                            <Setter.Value>
+                                <Image Source="{StaticResource AddSource-white}" Width="18" Height="18" />
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray" />
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Image Source="{StaticResource AddSource-black}" Width="18" Height="18" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>
