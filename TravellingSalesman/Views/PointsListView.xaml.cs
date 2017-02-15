@@ -30,6 +30,8 @@ namespace TravellingSalesman.Views
 
         private void NumberPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // TODO: Check does already contain the point
+
             if (!char.IsDigit(e.Text, e.Text.Length - 1))
                 e.Handled = true;
         }

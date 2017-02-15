@@ -12,25 +12,33 @@
         <utils:InvertConverter x:Key="Inverter" />
     </UserControl.Resources>
 
-    <Grid IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
+    <Grid SnapsToDevicePixels="True" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label Content="Points" Grid.Row="0" />
+        <Label Content="Points" Grid.Row="0" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="White" Background="Gray" />
 
-        <ListView ItemsSource="{Binding Points}" Grid.Row="1">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding X}" />
-                        <Label Content="{Binding Y}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <DataGrid ItemsSource="{Binding Points}" Validation.ErrorTemplate="{x:Null}" Grid.Row="1" ColumnWidth="*" HorizontalGridLinesBrush="Transparent" VerticalGridLinesBrush="Transparent" BorderBrush="Transparent" BorderThickness="0" CanUserAddRows="False" CanUserDeleteRows="True" SelectedItem="{Binding SelectedPoint}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="X">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox BorderThickness="0" BorderBrush="Transparent" Text="{Binding X, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewTextInput="NumberPreviewTextInput" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Y">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox BorderThickness="0" BorderBrush="Transparent" Text="{Binding Y, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewTextInput="NumberPreviewTextInput" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
 
         <Grid Grid.Row="2" >
             <Grid.ColumnDefinitions>
@@ -42,9 +50,9 @@
             </Grid.ColumnDefinitions>
             
             <Label Grid.Column="0" Content="x:" />
-            <TextBox x:Name="xPos" Text="{Binding X}" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
+            <TextBox x:Name="xPos" Text="{Binding X}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
             <Label Grid.Column="2" Content="y:" />
-            <TextBox x:Name="yPos" Text="{Binding Y}" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
+            <TextBox x:Name="yPos" Text="{Binding Y}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" />
             <Button Grid.Column="4" Content="Add" Command="{Binding AddCommand}" />
         </Grid>
     </Grid>

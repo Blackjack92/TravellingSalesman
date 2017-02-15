@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Timers;
 using System.Windows;
 using TravellingSalesman.Models;
@@ -30,7 +29,7 @@ namespace TravellingSalesman.Algorithms
             bw.DoWork += new DoWorkEventHandler(RunCalculation);
         }
 
-        public void Run(IEnumerable<Point> points)
+        public void Run(IEnumerable<BindablePoint> points)
         {
             Runtime = 0;
             timer.Start();

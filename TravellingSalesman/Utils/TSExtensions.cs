@@ -86,13 +86,13 @@ namespace TravellingSalesman.Utils
             return result;
         }
 
-        public static IEnumerable<Edge> TransformToEdges(this IEnumerable<Point> points)
+        public static IEnumerable<Edge> TransformToEdges(this IEnumerable<BindablePoint> points)
         {
             List<Edge> edges = new List<Edge>();
             for (int i = 1; i < points.Count(); i++)
             {
-                Point start = points.ElementAt(i - 1);
-                Point end = points.ElementAt(i);
+                BindablePoint start = points.ElementAt(i - 1);
+                BindablePoint end = points.ElementAt(i);
                 edges.Add(new Edge(start, end));
             }
 
@@ -105,27 +105,27 @@ namespace TravellingSalesman.Utils
             return edges;
         }
 
-        public static double CalculateDistance(this Point[] generation)
+        public static double CalculateDistance(this BindablePoint[] generation)
         {
             double sum = 0;
             for (int i = 1; i < generation.Count(); i++)
             {
-                sum += (generation[i - 1] - generation[i]).Length;
+                sum += (generation[i - 1].ToPoint() - generation[i].ToPoint()).Length;
             }
 
-            sum += (generation[generation.Count() - 1] - generation[0]).Length;
+            sum += generation.Count() >= 2 ? (generation[generation.Count() - 1].ToPoint() - generation[0].ToPoint()).Length : 0;
 
             return sum;
         }
 
-        public static double CalculateDistance(this IEnumerable<Point> generation)
+        public static double CalculateDistance(this IEnumerable<BindablePoint> generation)
         {
             return generation.ToArray().CalculateDistance();
         }
 
         public static double CalculateDistance(this IEnumerable<Edge> edges)
         {
-            return edges.Sum(e => (e.Start - e.End).Length);
+            return edges.Sum(e => (e.Start.ToPoint() - e.End.ToPoint()).Length);
         }
 
         public static T RandomElement<T>(this IEnumerable<T> enumerable)

@@ -13,10 +13,13 @@ namespace TravellingSalesman.ViewModels
 {
     public class MainViewModel : NotifyPropertyChangedBase
     {
-        public ObservableCollection<Point> Points { get; }
+        public ObservableCollection<BindablePoint> Points { get; }
         public ObservableCollection<Edge> Edges { get; }
 
         public ObservableCollection<StatisticEntry> Statistics { get; }
+
+        public BindablePoint SelectedPoint { get { return selectedPoint; } set { selectedPoint = value; OnPropertyChanged(); } }
+        private BindablePoint selectedPoint;
 
         public double Distance { get { return distance; } private set { distance = value; OnPropertyChanged(); } }
         private double distance;
@@ -91,18 +94,18 @@ namespace TravellingSalesman.ViewModels
 
             Statistics = new ObservableCollection<StatisticEntry>();
             Edges = new ObservableCollection<Edge>();
-            Points = new ObservableCollection<Point>();
-            Points.Add(new Point(0, 0));
-            Points.Add(new Point(150, 150));
-            Points.Add(new Point(250, 150));
-            Points.Add(new Point(50, 250));
-            Points.Add(new Point(300, 100));
-            Points.Add(new Point(250, 400));
-            Points.Add(new Point(150, 100));
-            Points.Add(new Point(250, 100));
-            Points.Add(new Point(400, 400));
-            Points.Add(new Point(450, 380));
-            Points.Add(new Point(0, 320));
+            Points = new ObservableCollection<BindablePoint>();
+            Points.Add(new BindablePoint(0, 0));
+            Points.Add(new BindablePoint(150, 150));
+            Points.Add(new BindablePoint(250, 150));
+            Points.Add(new BindablePoint(50, 250));
+            Points.Add(new BindablePoint(300, 100));
+            Points.Add(new BindablePoint(250, 400));
+            Points.Add(new BindablePoint(150, 100));
+            Points.Add(new BindablePoint(250, 100));
+            Points.Add(new BindablePoint(400, 400));
+            Points.Add(new BindablePoint(450, 380));
+            Points.Add(new BindablePoint(0, 320));
             Algorithm = Algorithms[0];
             StartCommand = new DelegateCommand(Calculate);
             AddCommand = new DelegateCommand(Add);
@@ -159,7 +162,7 @@ namespace TravellingSalesman.ViewModels
                             int y;
                             if (int.TryParse(coordinates[0], out x) && int.TryParse(coordinates[1], out y))
                             {
-                                Points.Add(new Point(x, y));
+                                Points.Add(new BindablePoint(x, y));
                             }
                         }
                     }
@@ -181,7 +184,7 @@ namespace TravellingSalesman.ViewModels
                 y = 0;
             }
 
-            Point p = new Point(x, y);
+            BindablePoint p = new BindablePoint(x, y);
             if (Points.Any(point => point.Equals(p)))
             {
                 MessageBox.Show("Point was already added.");

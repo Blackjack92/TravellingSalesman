@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using TravellingSalesman.Models;
 using TravellingSalesman.Utils;
 
 namespace TravellingSalesman.Algorithms
@@ -18,8 +19,8 @@ namespace TravellingSalesman.Algorithms
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            IEnumerable<Point> points = args.Argument as IEnumerable<Point>;
-            IEnumerable<Point> bestPermutation = points;
+            IEnumerable<BindablePoint> points = args.Argument as IEnumerable<BindablePoint>;
+            IEnumerable<BindablePoint> bestPermutation = points;
             int count = 0;
             foreach (var permutation in points.Permute(points.Count()))
             {

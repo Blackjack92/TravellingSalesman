@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using TravellingSalesman.Models;
 using TravellingSalesman.Utils;
 
 namespace TravellingSalesman.Algorithms
@@ -14,10 +15,10 @@ namespace TravellingSalesman.Algorithms
             Name = "Simulated Annealing";
         }
 
-        private Point[] Lin2Opt(Point[] generation)
+        private BindablePoint[] Lin2Opt(BindablePoint[] generation)
         {
             // Clone dictionary
-            Point[] newGeneration = (Point[])generation.Clone();
+            BindablePoint[] newGeneration = (BindablePoint[])generation.Clone();
 
             // Take two random cities
             int a = newGeneration.RandomIndex();
@@ -27,7 +28,7 @@ namespace TravellingSalesman.Algorithms
             // Cut connections and reconnect
             int start = Math.Min(a, b);
             int end = Math.Max(a, b);
-            IEnumerable<Point> range = newGeneration.SubArray(start, end - start);
+            IEnumerable<BindablePoint> range = newGeneration.SubArray(start, end - start);
             range = range.Reverse();
             for (int i = 0; i < range.Count(); i++)
             {
@@ -41,8 +42,8 @@ namespace TravellingSalesman.Algorithms
         {
             BackgroundWorker worker = sender as BackgroundWorker;
             
-            IEnumerable<Point> points = args.Argument as IEnumerable<Point>;
-            Point[] generation = points.ToArray();
+            IEnumerable<BindablePoint> points = args.Argument as IEnumerable<BindablePoint>;
+            BindablePoint[] generation = points.ToArray();
             OnCalculated(generation.TransformToEdges());
 
             double fitness = generation.CalculateDistance();
@@ -65,7 +66,7 @@ namespace TravellingSalesman.Algorithms
                 }
                 else
                 {
-                    Point[] newGeneration = Lin2Opt(generation);
+                    BindablePoint[] newGeneration = Lin2Opt(generation);
                     double newFitness = newGeneration.CalculateDistance();
 
                     // Decide if the new generation should be taken

@@ -7,17 +7,19 @@
              xmlns:models="clr-namespace:TravellingSalesman.Models"
              xmlns:utils="clr-namespace:TravellingSalesman.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="view">
     
     <UserControl.Resources>
         <utils:InvertConverter x:Key="Inverter" />
         <utils:CenteringConverter x:Key="Centering" />
         <utils:MethodToValueConverter x:Key="MethodToValue" />
+        <utils:SelectionToColorConverter x:Key="SelectionToColor" />
     </UserControl.Resources>
 
-    <Grid Background="White">
+    <Grid Background="White" SnapsToDevicePixels="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -28,34 +30,50 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal">
-            <Label Content="Select algorithm:" />
-            <ComboBox ItemsSource="{Binding Algorithms}" SelectedItem="{Binding Algorithm}" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}">
+        <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="DarkGray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="70" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontWeight="Bold" Content="Algorithm" VerticalAlignment="Center" />
+            <ComboBox Grid.Column="1" ItemsSource="{Binding Algorithms}" SelectedItem="{Binding Algorithm}" IsEnabled="{Binding IsAlgorithmRunning, Converter={StaticResource Inverter}}" VerticalContentAlignment="Center" Margin="0,2">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <Label Content="{Binding Name}" />
+                        <Label Content="{Binding Name}" Padding="0" Margin="0" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Label Content="Distance:" />
-            <Label Content="{Binding Distance}" />
-            <Label Content="{Binding Algorithm.Runtime}" />
-        </StackPanel>
-
+            <Label Grid.Column="2" Content="Distance:" FontWeight="Bold" VerticalAlignment="Center" />
+            <Label Grid.Column="3" Content="{Binding Distance}" FontWeight="Bold" ContentStringFormat="F2" VerticalAlignment="Center" />
+            <Label Grid.Column="4" Content="Runtime:" FontWeight="Bold" VerticalAlignment="Center" />
+            <Label Grid.Column="5" Content="{Binding Algorithm.Runtime}" FontWeight="Bold" ContentStringFormat="F2" VerticalAlignment="Center" />
+        </Grid>
+        
         <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Grid>
         <!-- Draw points -->
-        <ItemsControl ItemsSource="{Binding Points}">
+        <ItemsControl ItemsSource="{Binding Points}" Margin="5">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas Height="500" Width="500" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="Point">
-                    <Ellipse Fill="Yellow" Width="10" Height="10"
-                             StrokeThickness="2" Stroke="Black" />
-                </DataTemplate>
+                <DataTemplate DataType="{x:Type models:BindablePoint}">
+                            <Ellipse Width="10" Height="10"
+                             StrokeThickness="2" Stroke="Black">
+                                <Ellipse.Fill>
+                                    <MultiBinding Converter="{StaticResource SelectionToColor}">
+                                        <Binding ElementName="view" Path="DataContext.SelectedPoint" />
+                                        <Binding Path="" />
+                                    </MultiBinding>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
@@ -66,7 +84,7 @@
         </ItemsControl>
 
         <!-- Draw edges -->
-        <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Edges}">
+        <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" ItemsSource="{Binding Edges}" Margin="5">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas Height="500" Width="500" />

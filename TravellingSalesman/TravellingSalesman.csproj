@@ -64,6 +64,7 @@
     <Compile Include="Algorithms\Algorithm.cs" />
     <Compile Include="Algorithms\BruteForce.cs" />
     <Compile Include="Algorithms\SimulatedAnnealing.cs" />
+    <Compile Include="Models\BindablePoint.cs" />
     <Compile Include="Models\Edge.cs" />
     <Compile Include="Models\StatisticEntry.cs" />
     <Compile Include="Utils\CenteringConverter.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Utils\InvertConverter.cs" />
     <Compile Include="Utils\MethodToValueConverter.cs" />
     <Compile Include="Utils\NotifyPropertyChangedBase.cs" />
+    <Compile Include="Utils\SelectionToColorConverter.cs" />
     <Compile Include="Utils\TSExtensions.cs" />
     <Compile Include="Views\PointsListView.xaml.cs">
       <DependentUpon>PointsListView.xaml</DependentUpon>
