@@ -73,6 +73,7 @@
     <Compile Include="Utils\DelegateCommand.cs" />
     <Compile Include="Utils\InvertConverter.cs" />
     <Compile Include="Utils\NotifyPropertyChangedBase.cs" />
+    <Compile Include="Utils\NumberValidationRule.cs" />
     <Compile Include="Utils\SelectionToColorConverter.cs" />
     <Compile Include="Utils\TSExtensions.cs" />
     <Compile Include="Views\PointsListView.xaml.cs">

@@ -62,14 +62,30 @@
                 <DataGridTemplateColumn Header="X">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox BorderThickness="0" BorderBrush="Transparent" Text="{Binding X, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewTextInput="NumberPreviewTextInput" />
+                            <TextBox BorderThickness="0" BorderBrush="Transparent">
+                                <TextBox.Text>
+                                    <Binding Path="X" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <utils:NumberValidationRule UpperBound="500" LowerBound="0" />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Y">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox BorderThickness="0" BorderBrush="Transparent" Text="{Binding Y, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewTextInput="NumberPreviewTextInput" />
+                            <TextBox BorderThickness="0" BorderBrush="Transparent">
+                                <TextBox.Text>
+                                    <Binding Path="Y" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <utils:NumberValidationRule UpperBound="500" LowerBound="0" />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -87,9 +103,25 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="0" Content="x:" Foreground="White" />
-            <TextBox x:Name="xPos" Text="{Binding X}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="2" />
+            <TextBox Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="2">
+                <TextBox.Text>
+                    <Binding Path="X" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <utils:NumberValidationRule UpperBound="500" LowerBound="0" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <Label Grid.Column="2" Content="y:" Foreground="White" />
-            <TextBox x:Name="yPos" Text="{Binding Y}" PreviewTextInput="NumberPreviewTextInput" Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="2" />
+            <TextBox Grid.Column="3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Margin="2">
+                <TextBox.Text>
+                    <Binding Path="Y" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <utils:NumberValidationRule UpperBound="500" LowerBound="0" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <Button Grid.Column="4" Command="{Binding AddCommand}" Padding="5">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButton}">

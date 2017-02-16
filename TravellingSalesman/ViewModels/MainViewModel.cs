@@ -156,7 +156,7 @@ namespace TravellingSalesman.ViewModels
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 BindablePoint point = e.OldItems.OfType<BindablePoint>().First();
-                if (point != null)
+                if (point != null && Edges.Count >= 2)
                 {
                     // Get the edges, which referenced the deleted point
                     Edge to = Edges.First(edge => edge.End.Equals(point));
@@ -171,6 +171,12 @@ namespace TravellingSalesman.ViewModels
                     Edges.Remove(from);
                     Edges.Add(combine);
                 }
+                else if (point != null && Edges.Count <= 1)
+                {
+                    Edges.Clear();
+                }
+
+                SelectedPoint = Points.FirstOrDefault();
             }
 
             // Calculate the new distance after the edges where changed.
